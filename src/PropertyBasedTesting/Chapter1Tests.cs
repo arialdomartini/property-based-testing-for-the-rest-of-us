@@ -2,7 +2,6 @@ using FsCheck;
 using FsCheck.Xunit;
 using Xunit;
 using PropertyBasedTesting.Resources;
-using static PropertyBasedTesting.AssertExtensions;
 using static PropertyBasedTesting.Resources.Category;
 
 namespace PropertyBasedTesting;
@@ -155,12 +154,18 @@ public class Chapter1Tests
 
     record User(int Id, string FirstName, string LastName);
     
-    void generating_users()
+    [Property]
+    Property generating_users()
     {
-        Gen<User> users =
+        var users = Arb.From(
             from firstName in Gen.Elements("Don", "Henrik", null)
             from secondName in Gen.Elements("Syme", "Feldt")
             from id in Gen.Choose(0, 1000)
-            select new User(id, firstName, secondName);
+            select new User(id, firstName, secondName));
+
+        bool idIsLowerThan1001(User user) =>
+            user.Id < 1001;
+        
+        return Prop.ForAll(users, idIsLowerThan1001);
     }
 }
