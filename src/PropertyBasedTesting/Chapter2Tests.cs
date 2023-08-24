@@ -17,4 +17,8 @@ public class Chapter2Tests
 
         return ForAll(numbers, squareIsNotNegative);
     }
+    
+    [Property]
+    Property square_of_numbers_are_non_negative_as_a_one_liner() => 
+        ForAll(Arb.From<int>(), n => n * n >= 0);
 }
