@@ -1,7 +1,7 @@
 using FsCheck.Xunit;
-using PropertyBasedTesting.Resource;
+using PropertyBasedTesting.Resources;
 using Xunit;
-using static PropertyBasedTesting.Resource.Category;
+using static PropertyBasedTesting.Resources.Category;
 
 namespace PropertyBasedTesting;
 

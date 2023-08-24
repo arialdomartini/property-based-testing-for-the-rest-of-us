@@ -1,4 +1,4 @@
-namespace PropertyBasedTesting.Resource;
+namespace PropertyBasedTesting.Resources;
 
 internal class DummyRepository : IRepository
 {
