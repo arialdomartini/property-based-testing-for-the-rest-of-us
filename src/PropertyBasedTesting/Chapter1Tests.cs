@@ -1,14 +1,15 @@
 using FsCheck;
 using FsCheck.Xunit;
+using Microsoft.FSharp.Collections;
 using Xunit;
 
 using PropertyBasedTesting.Resources;
+using static PropertyBasedTesting.AssertExtensions;
 using static PropertyBasedTesting.Resources.Category;
 
 namespace PropertyBasedTesting;
  
 record Product(Guid Id, string Name, Category Category, decimal Price);
-
 
 public class Chapter1Tests
 {
@@ -103,4 +104,51 @@ public class Chapter1Tests
         
         Check.QuickThrowOnFailure(property);
     }
+    
+    
+    int Sum(int a, int b) => a + b;
+    
+    [Property]
+    bool sum_is_commutative(int a, int b) => 
+        a + b == b + a;
+
+    [Property]
+    bool adding_zero_does_not_change_the_result(int a) => 
+        a + 0 == a;
+
+    [Fact]
+    void generates_strings_from_generator_of_chars()
+    {
+        Gen<char> chars = Arb.Generate<char>();
+        Gen<string> strings = Gen.ListOf(chars).Select(string.Concat);
+        
+        var arbitraryStrings = Gen.Sample(1,100, strings).ToList();
+
+        AssertAreAllDifferent(arbitraryStrings);
+    }
+
+    [Fact]
+    void generates_random_Products()
+    {
+        Gen<Product> products =
+            from id in Arb.Generate<Guid>()
+            from name in Arb.Generate<string>()
+            from price in Arb.Generate<decimal>()
+            from category in Arb.Generate<Category>()
+            select new Product(Id: id, Name: name, Price: price, Category: category);
+        
+        var arbitraryProducts = Gen.Sample(1,100, products).ToList();
+
+        AssertAreAllDifferent(arbitraryProducts.Select(p => p.Id));
+    }
 }
+
+internal static class AssertExtensions
+{
+    internal static bool AreAllDifferent<T>(this IEnumerable<T> ids) => ids.Count() == ids.Distinct().Count();
+
+    internal static void AssertAreAllDifferent<T>(IEnumerable<T> xs)
+    {
+        Assert.True(xs.AreAllDifferent());
+    }
+} 
