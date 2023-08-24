@@ -1,3 +1,4 @@
+using FsCheck.Xunit;
 using PropertyBasedTesting.Resource;
 using Xunit;
 using static PropertyBasedTesting.Resource.Category;
@@ -26,5 +27,16 @@ public class Chapter1Tests
         var found = _repository.LoadById(product.Id);
 
         Assert.Equal(found, product);
+    }
+
+    // The same test, as a Property
+    [Property]
+    bool all_products_can_be_persisted(Product product)
+    {
+        _repository.Save(product);
+
+        var found = _repository.LoadById(product.Id);
+
+        return found == product;
     }
 }
