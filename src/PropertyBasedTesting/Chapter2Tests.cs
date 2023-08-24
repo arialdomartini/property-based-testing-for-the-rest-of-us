@@ -1,3 +1,4 @@
+using PropertyBasedTesting.Resources;
 using static PropertyBasedTesting.Resources.Serializer;
 
 namespace PropertyBasedTesting;
@@ -19,11 +20,11 @@ public class Chapter2Tests
 
         return ForAll(numbers, squareIsNotNegative);
     }
-    
+
     [Property]
-    Property square_of_numbers_are_non_negative_as_a_one_liner() => 
+    Property square_of_numbers_are_non_negative_as_a_one_liner() =>
         ForAll(Arb.From<int>(), n => n * n >= 0);
-    
+
     [Property]
     Property serialization_deserialization_roundtrip()
     {
@@ -32,12 +33,29 @@ public class Chapter2Tests
         bool roundtripLooseNoInformation(Product product)
         {
             var afterRoundTrip = Deserialize<Product>(Serialize(product));
-                
+
             return afterRoundTrip == product;
         }
 
         return Prop.ForAll(products, roundtripLooseNoInformation);
     }
-        
-        
+
+    private readonly IRepository _repository = new DummyRepository();
+
+    [Property]
+    Property products_can_be_persisted()
+    {
+        Arbitrary<Product> products = Arb.From<Product>();
+
+        bool canBeSavedOnDb(Product product)
+        {
+            _repository.Save(product);
+
+            var found = _repository.LoadById(product.Id);
+
+            return found == product;
+        }
+
+        return Prop.ForAll(products, canBeSavedOnDb);
+    }
 }
