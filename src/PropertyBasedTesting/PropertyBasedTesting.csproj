@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <PackageReference Include="FsCheck.Xunit" Version="2.16.6" />
+        <PackageReference Include="System.Text.Json" />
         <PackageReference Include="xunit" Version="2.4.2" />
         <PackageReference Include="xunit.runner.visualstudio" Version="2.4.5">
             <PrivateAssets>all</PrivateAssets>
